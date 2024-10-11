@@ -56,13 +56,13 @@ public class Worker extends Employee{
     public void run(){
         int days = 0;
         while(true){
-            try {                
+            try {         
                 collectSalary();
                 
                 //Caso en el que el trabajador tarda 1 dia o mas en crear el componente
                 getMutex().acquire();
                 if(daysPerComponent != null){
-                    if(days == daysPerComponent){                        
+                    if(days == daysPerComponent){                         
                         storeComponent();
                         days = 1;
                     }
@@ -73,15 +73,15 @@ public class Worker extends Employee{
                 else if(componentsPerDay != null){   
                     int quantity = (int) componentsPerDay.floatValue();
                     storeComponent(quantity);
+                    fixComponents();
                 }
                 getMutex().release();
-                
-                int[] components = getWh().getComponents();                
+                                            
                                     
                 
                 Thread.sleep(Company.dayDuration);
             } catch (InterruptedException ex) {
-                Logger.getLogger(Worker.class.getName()).log(Level.SEVERE, null, ex);
+                break;
             }
         }
     }
@@ -187,6 +187,29 @@ public class Worker extends Employee{
         getWh().setComponents(components);
     }
     
+    public void fixComponents(){
+        int[] components = getWh().getComponents();
+        if(components[0] > 25){
+            components[0] = 25;
+        }
+        
+        else if(components[1] > 20){
+            components[1] = 20;
+        }
+        
+        else if(components[2] > 55){
+            components[2] = 55;
+        }
+        
+        else if(components[3] > 35){
+            components[3] = 35;
+        }
+        
+        else if(components[4] > 10){
+            components[4] = 10;
+        }
+    }
+    
     
        
     //===================Getters and Setters===================
@@ -213,6 +236,13 @@ public class Worker extends Employee{
     public void setComponentsPerDay(Float componentsPerDay) {
         this.componentsPerDay = componentsPerDay;
     }
+
+    @Override
+    public String toString() {
+        return "Worker" + getID() + "{ type=" + type + ", daysPerComponent=" + daysPerComponent + ", componentsPerDay=" + componentsPerDay + '}';
+    }
+    
+    
     
     
     

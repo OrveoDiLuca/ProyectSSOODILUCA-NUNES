@@ -17,6 +17,8 @@ public class Director extends Employee{
     //Atributos     
     private ProyectManager pm;
     private Company company;
+    int days = 0;
+    int moneyDiscount = 0;
     
     //Constructor
     public Director(int ID, Wharehouse wh, Semaphore mutex, ProyectManager pm, Company company) {
@@ -28,8 +30,7 @@ public class Director extends Employee{
     //======================Metodos=====================
     
     @Override
-    public void run(){
-        int days = 0;
+    public void run(){        
         float hours = 0f;
         boolean passDay = false;
         
@@ -54,9 +55,7 @@ public class Director extends Employee{
                 getMutex().acquire();
                 if(days < Company.daysToDispatch){
                     float trueRandomHour = randomHour/2;
-//                  System.out.println(hours + " " + randomHour/2);
-                    if(hours == trueRandomHour){
-                        System.out.println("REVISANDO AL PMMMMMM");
+                    if(hours == trueRandomHour){                        
                         statusVerificationPM();
                     }
                 }
@@ -69,7 +68,7 @@ public class Director extends Employee{
                 
                 Thread.sleep((Company.dayDuration/24)/2);
             } catch (InterruptedException ex) {
-                Logger.getLogger(Director.class.getName()).log(Level.SEVERE, null, ex);
+                break;
             }
         }
     }
@@ -78,18 +77,20 @@ public class Director extends Employee{
         int[] computers = getWh().getComputers();
         int[] computersSelled = getWh().getComputersSelled();
         
-        computersSelled[0] = computers[0];
-        computersSelled[1] = computers[1];
+        computersSelled[0] += computers[0];
+        computersSelled[1] += computers[1];
         
         computers[0] = 0;
         computers[1] = 0;   
         
-        getWh().setComputers(computers);        
+        getWh().setComputers(computers);   
+        getWh().setComputersSelled(computersSelled);
     }
     
     
     public void statusVerificationPM(){  
         if(!company.getProyectManager().isWorking()){
+            moneyDiscount += 100;
             pm.setProfit(pm.getProfit() - 100);
         }        
     }

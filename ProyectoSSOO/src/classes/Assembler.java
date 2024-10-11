@@ -20,28 +20,29 @@ public class Assembler extends Employee {
     }
     
     //===============Metodos=================
-    public void run(){
+    public void run(){        
         int computers = 0;
         while(true){            
             try {
                 collectSalary();
                 
                 getMutex().acquire();
-                if(canAssemble()){                    
-                    if(computers == getWh().getComputersToCreateGPUComputer()){
-                        storeGPUComputer();
+                if(canAssemble()){   
+                    System.out.println(getWh().getComputersToCreateGPUComputer());
+                    if((computers % getWh().getComputersToCreateGPUComputer()) == 0 && computers != 0){
+                        storeGPUComputer();                        
                         computers = 0;
                     }
                     else{
                         storeComputer();                    
-                    }
-                    computers++;
+                        computers = getWh().getComputers()[0];
+                    }                    
                 }
                 getMutex().release();
                 
                 Thread.sleep(Company.dayDuration);
             } catch (InterruptedException ex) {
-                Logger.getLogger(Assembler.class.getName()).log(Level.SEVERE, null, ex);
+                break;
             }
             
         }
@@ -97,6 +98,13 @@ public class Assembler extends Employee {
     }
     
     //===================Getters and Setters===================
+
+    @Override
+    public String toString() {
+        return "Assembler" + getID();
+    }
+    
+    
     
     
     

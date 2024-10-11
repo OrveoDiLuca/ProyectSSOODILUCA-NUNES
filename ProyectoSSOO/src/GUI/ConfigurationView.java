@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.concurrent.Semaphore;
 import javax.swing.JFileChooser;
+import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
@@ -21,33 +22,58 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public class ConfigurationView extends javax.swing.JPanel {
 
     Company dell, apple;
-    int workersCount;
-    String[] values;
+    int workersCountApple;    
+    int workersCountDell;   
+    String[] valuesApple;
+    String[] valuesDell;
+    String dayDurationStr;
+    String deadlineStr;
     
     public ConfigurationView(Company dell, Company apple) {
         this.dell = dell;
         this.apple = apple;  
-        this.workersCount = 0; 
-        this.values = null;
+        this.workersCountApple = 0;   
+        this.workersCountDell = 0; 
+        this.valuesApple = new String[7];
+        this.valuesDell = new String[7];
+        this.dayDurationStr = "";
+        this.deadlineStr = "";
+        
         initComponents();
         this.messageLabel.setText("");
     }
     
-    public ConfigurationView(Company dell, Company apple, String[] values) {
+    public ConfigurationView(Company dell, Company apple, String[] valuesApple, String[] valuesDell, String dayDuration, 
+            String deadline) {
         this.dell = dell;
         this.apple = apple;  
-        this.workersCount = 0; 
-        this.values = values;
+        this.workersCountApple = 0;
+        this.workersCountDell = 0;
+        this.valuesApple = valuesApple;
+        this.valuesDell = valuesDell;
+        this.dayDurationStr = dayDuration;
+        this.deadlineStr = deadline;
         
         initComponents();
-        this.messageLabel.setText("");
-        numWorkers.setText(values[0]);
-        workersMotherboards.setText(values[1]);
-        workersCPU.setText(values[2]);
-        workersRAM.setText(values[3]);
-        workersPowerSupply.setText(values[4]);
-        workersGPU.setText(values[5]);
-        numAssemblers.setText(values[6]);
+        messageLabel.setText("");        
+        numWorkersApple.setText(valuesApple[0]);
+        workersMotherboardsApple.setText(valuesApple[1]);
+        workersCPUApple.setText(valuesApple[2]);
+        workersRAMApple.setText(valuesApple[3]);
+        workersPowerSupplyApple.setText(valuesApple[4]);
+        workersGPUApple.setText(valuesApple[5]);
+        numAssemblersApple.setText(valuesApple[6]);
+        
+        numWorkersDell.setText(valuesDell[0]);
+        workersMotherboardsDell.setText(valuesDell[1]);
+        workersCPUDell.setText(valuesDell[2]);
+        workersRAMDell.setText(valuesDell[3]);
+        workersPowerSupplyDell.setText(valuesDell[4]);
+        workersGPUDell.setText(valuesDell[5]);
+        numAssemblersDell.setText(valuesDell[6]);
+        
+        this.dayDuration.setText(dayDuration);
+        this.deadline.setText(deadline);
     }
     
     public Company getDell(){
@@ -56,6 +82,36 @@ public class ConfigurationView extends javax.swing.JPanel {
     
     public Company getApple(){
         return this.apple;
+    }
+    
+    public boolean canAddAppleComponent(){
+        int workers = Integer.parseInt(numWorkersApple.getText());
+        
+        int mb = Integer.parseInt(workersMotherboardsApple.getText());
+        int cpu = Integer.parseInt(workersCPUApple.getText());
+        int ram = Integer.parseInt(workersRAMApple.getText());
+        int ps = Integer.parseInt(workersPowerSupplyApple.getText());
+        int gpu = Integer.parseInt(workersGPUApple.getText());
+        int assemblers = Integer.parseInt(numAssemblersApple.getText());
+        
+        int total = mb+ cpu + ram + ps + gpu + assemblers + 1;
+        
+        return total <= workers;
+    }
+    
+    public boolean canAddDellComponent(){
+        int workers = Integer.parseInt(numWorkersDell.getText());
+        
+        int mb = Integer.parseInt(workersMotherboardsDell.getText());
+        int cpu = Integer.parseInt(workersCPUDell.getText());
+        int ram = Integer.parseInt(workersRAMDell.getText());
+        int ps = Integer.parseInt(workersPowerSupplyDell.getText());
+        int gpu = Integer.parseInt(workersGPUDell.getText());
+        int assemblers = Integer.parseInt(numAssemblersDell.getText());
+        
+        int total = mb+ cpu + ram + ps + gpu + assemblers + 1;
+        
+        return total <= workers;
     }
 
     /**
@@ -76,405 +132,777 @@ public class ConfigurationView extends javax.swing.JPanel {
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        minusWorkers = new javax.swing.JButton();
-        plusWorkers = new javax.swing.JButton();
-        minusMotherboard = new javax.swing.JButton();
-        plusMotherboard = new javax.swing.JButton();
-        minusCPU = new javax.swing.JButton();
-        plusCPU = new javax.swing.JButton();
-        minusRAM = new javax.swing.JButton();
-        plusRAM = new javax.swing.JButton();
-        minusPowerSupply = new javax.swing.JButton();
-        plusPowerSupply = new javax.swing.JButton();
-        minusGPU = new javax.swing.JButton();
-        plusGPU = new javax.swing.JButton();
-        minusAssemblers = new javax.swing.JButton();
-        plusAssemblers = new javax.swing.JButton();
-        numWorkers = new javax.swing.JLabel();
-        workersMotherboards = new javax.swing.JLabel();
-        workersCPU = new javax.swing.JLabel();
-        workersRAM = new javax.swing.JLabel();
-        workersPowerSupply = new javax.swing.JLabel();
-        workersGPU = new javax.swing.JLabel();
-        numAssemblers = new javax.swing.JLabel();
-        daysDuration = new javax.swing.JTextField();
+        minusWorkersApple = new javax.swing.JButton();
+        plusWorkersApple = new javax.swing.JButton();
+        minusMotherboardApple = new javax.swing.JButton();
+        plusMotherboardApple = new javax.swing.JButton();
+        minusCPUApple = new javax.swing.JButton();
+        plusCPUApple = new javax.swing.JButton();
+        minusRAMApple = new javax.swing.JButton();
+        plusRAMApple = new javax.swing.JButton();
+        minusPowerSupplyApple = new javax.swing.JButton();
+        plusPowerSupplyApple = new javax.swing.JButton();
+        minusGPUApple = new javax.swing.JButton();
+        plusGPUApple = new javax.swing.JButton();
+        minusAssemblersApple = new javax.swing.JButton();
+        plusAssemblersApple = new javax.swing.JButton();
+        numWorkersApple = new javax.swing.JLabel();
+        workersMotherboardsApple = new javax.swing.JLabel();
+        workersCPUApple = new javax.swing.JLabel();
+        workersRAMApple = new javax.swing.JLabel();
+        workersPowerSupplyApple = new javax.swing.JLabel();
+        workersGPUApple = new javax.swing.JLabel();
+        numAssemblersApple = new javax.swing.JLabel();
+        dayDuration = new javax.swing.JTextField();
         saveConfiguration = new javax.swing.JButton();
         jLabel9 = new javax.swing.JLabel();
-        startSimulation = new javax.swing.JButton();
         jLabel10 = new javax.swing.JLabel();
-        simulationDuration = new javax.swing.JTextField();
+        deadline = new javax.swing.JTextField();
         messageLabel = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        minusWorkersDell = new javax.swing.JButton();
+        plusWorkersDell = new javax.swing.JButton();
+        minusMotherboardDell = new javax.swing.JButton();
+        plusMotherboardDell = new javax.swing.JButton();
+        minusCPUDell = new javax.swing.JButton();
+        plusCPUDell = new javax.swing.JButton();
+        minusRAMDell = new javax.swing.JButton();
+        plusRAMDell = new javax.swing.JButton();
+        minusPowerSupplyDell = new javax.swing.JButton();
+        plusPowerSupplyDell = new javax.swing.JButton();
+        minusGPUDell = new javax.swing.JButton();
+        plusGPUDell = new javax.swing.JButton();
+        minusAssemblersDell = new javax.swing.JButton();
+        plusAssemblersDell = new javax.swing.JButton();
+        numWorkersDell = new javax.swing.JLabel();
+        workersMotherboardsDell = new javax.swing.JLabel();
+        workersCPUDell = new javax.swing.JLabel();
+        workersRAMDell = new javax.swing.JLabel();
+        workersPowerSupplyDell = new javax.swing.JLabel();
+        workersGPUDell = new javax.swing.JLabel();
+        numAssemblersDell = new javax.swing.JLabel();
+        jLabel19 = new javax.swing.JLabel();
 
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        content.setBackground(new java.awt.Color(204, 204, 204));
+        content.setBackground(new java.awt.Color(204, 204, 255));
         content.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 1, 1, 1, new java.awt.Color(102, 102, 102)));
-        content.setPreferredSize(new java.awt.Dimension(800, 450));
+        content.setPreferredSize(new java.awt.Dimension(800, 410));
         content.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setText("Nro Trabajadores");
-        content.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 70, -1, -1));
+        content.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 100, -1, -1));
 
         jLabel2.setText("Productores de CPU");
-        content.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 150, -1, -1));
+        content.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 180, -1, -1));
 
-        jLabel3.setText("Productores de Placas base");
-        content.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 110, -1, -1));
+        jLabel3.setText("Productores de Placas Base");
+        content.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 140, -1, -1));
 
         jLabel4.setText("Productores de RAM");
-        content.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 190, -1, -1));
+        content.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 220, -1, -1));
 
         jLabel5.setText("Productores de fuentes de alimentacion");
-        content.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 230, -1, -1));
+        content.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 260, -1, -1));
 
         jLabel6.setText("Productores de GPU");
-        content.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 270, -1, -1));
+        content.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 300, -1, -1));
 
         jLabel7.setText("Ensambladores");
-        content.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 310, -1, -1));
+        content.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 340, -1, -1));
 
-        jLabel8.setText("Duracion de un dia (ms):");
-        content.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 70, -1, -1));
+        jLabel8.setText("Duracion del dia (ms):");
+        content.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 100, -1, -1));
 
-        minusWorkers.setText("-");
-        minusWorkers.addActionListener(new java.awt.event.ActionListener() {
+        minusWorkersApple.setBackground(new java.awt.Color(246, 243, 243));
+        minusWorkersApple.setText("-");
+        minusWorkersApple.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                minusWorkersActionPerformed(evt);
+                minusWorkersAppleActionPerformed(evt);
             }
         });
-        content.add(minusWorkers, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 70, -1, -1));
+        content.add(minusWorkersApple, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 100, -1, -1));
 
-        plusWorkers.setText("+");
-        plusWorkers.addActionListener(new java.awt.event.ActionListener() {
+        plusWorkersApple.setBackground(new java.awt.Color(246, 243, 243));
+        plusWorkersApple.setText("+");
+        plusWorkersApple.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                plusWorkersActionPerformed(evt);
+                plusWorkersAppleActionPerformed(evt);
             }
         });
-        content.add(plusWorkers, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 70, -1, -1));
+        content.add(plusWorkersApple, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 100, -1, -1));
 
-        minusMotherboard.setText("-");
-        minusMotherboard.addActionListener(new java.awt.event.ActionListener() {
+        minusMotherboardApple.setBackground(new java.awt.Color(246, 243, 243));
+        minusMotherboardApple.setText("-");
+        minusMotherboardApple.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                minusMotherboardActionPerformed(evt);
+                minusMotherboardAppleActionPerformed(evt);
             }
         });
-        content.add(minusMotherboard, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 110, -1, -1));
+        content.add(minusMotherboardApple, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 140, -1, -1));
 
-        plusMotherboard.setText("+");
-        plusMotherboard.addActionListener(new java.awt.event.ActionListener() {
+        plusMotherboardApple.setBackground(new java.awt.Color(246, 243, 243));
+        plusMotherboardApple.setText("+");
+        plusMotherboardApple.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                plusMotherboardActionPerformed(evt);
+                plusMotherboardAppleActionPerformed(evt);
             }
         });
-        content.add(plusMotherboard, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 110, -1, -1));
+        content.add(plusMotherboardApple, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 140, -1, -1));
 
-        minusCPU.setText("-");
-        minusCPU.addActionListener(new java.awt.event.ActionListener() {
+        minusCPUApple.setBackground(new java.awt.Color(246, 243, 243));
+        minusCPUApple.setText("-");
+        minusCPUApple.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                minusCPUActionPerformed(evt);
+                minusCPUAppleActionPerformed(evt);
             }
         });
-        content.add(minusCPU, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 150, -1, -1));
+        content.add(minusCPUApple, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 180, -1, -1));
 
-        plusCPU.setText("+");
-        plusCPU.addActionListener(new java.awt.event.ActionListener() {
+        plusCPUApple.setBackground(new java.awt.Color(246, 243, 243));
+        plusCPUApple.setText("+");
+        plusCPUApple.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                plusCPUActionPerformed(evt);
+                plusCPUAppleActionPerformed(evt);
             }
         });
-        content.add(plusCPU, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 150, -1, -1));
+        content.add(plusCPUApple, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 180, -1, -1));
 
-        minusRAM.setText("-");
-        minusRAM.addActionListener(new java.awt.event.ActionListener() {
+        minusRAMApple.setBackground(new java.awt.Color(246, 243, 243));
+        minusRAMApple.setText("-");
+        minusRAMApple.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                minusRAMActionPerformed(evt);
+                minusRAMAppleActionPerformed(evt);
             }
         });
-        content.add(minusRAM, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 190, -1, -1));
+        content.add(minusRAMApple, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 220, -1, -1));
 
-        plusRAM.setText("+");
-        plusRAM.addActionListener(new java.awt.event.ActionListener() {
+        plusRAMApple.setBackground(new java.awt.Color(246, 243, 243));
+        plusRAMApple.setText("+");
+        plusRAMApple.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                plusRAMActionPerformed(evt);
+                plusRAMAppleActionPerformed(evt);
             }
         });
-        content.add(plusRAM, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 190, -1, -1));
+        content.add(plusRAMApple, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 220, -1, -1));
 
-        minusPowerSupply.setText("-");
-        minusPowerSupply.addActionListener(new java.awt.event.ActionListener() {
+        minusPowerSupplyApple.setBackground(new java.awt.Color(246, 243, 243));
+        minusPowerSupplyApple.setText("-");
+        minusPowerSupplyApple.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                minusPowerSupplyActionPerformed(evt);
+                minusPowerSupplyAppleActionPerformed(evt);
             }
         });
-        content.add(minusPowerSupply, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 230, -1, -1));
+        content.add(minusPowerSupplyApple, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 260, -1, -1));
 
-        plusPowerSupply.setText("+");
-        plusPowerSupply.addActionListener(new java.awt.event.ActionListener() {
+        plusPowerSupplyApple.setBackground(new java.awt.Color(246, 243, 243));
+        plusPowerSupplyApple.setText("+");
+        plusPowerSupplyApple.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                plusPowerSupplyActionPerformed(evt);
+                plusPowerSupplyAppleActionPerformed(evt);
             }
         });
-        content.add(plusPowerSupply, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 230, -1, -1));
+        content.add(plusPowerSupplyApple, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 260, -1, -1));
 
-        minusGPU.setText("-");
-        minusGPU.addActionListener(new java.awt.event.ActionListener() {
+        minusGPUApple.setBackground(new java.awt.Color(246, 243, 243));
+        minusGPUApple.setText("-");
+        minusGPUApple.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                minusGPUActionPerformed(evt);
+                minusGPUAppleActionPerformed(evt);
             }
         });
-        content.add(minusGPU, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 270, -1, -1));
+        content.add(minusGPUApple, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 300, -1, -1));
 
-        plusGPU.setText("+");
-        plusGPU.addActionListener(new java.awt.event.ActionListener() {
+        plusGPUApple.setBackground(new java.awt.Color(246, 243, 243));
+        plusGPUApple.setText("+");
+        plusGPUApple.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                plusGPUActionPerformed(evt);
+                plusGPUAppleActionPerformed(evt);
             }
         });
-        content.add(plusGPU, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 270, -1, -1));
+        content.add(plusGPUApple, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 300, -1, -1));
 
-        minusAssemblers.setText("-");
-        minusAssemblers.addActionListener(new java.awt.event.ActionListener() {
+        minusAssemblersApple.setBackground(new java.awt.Color(246, 243, 243));
+        minusAssemblersApple.setText("-");
+        minusAssemblersApple.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                minusAssemblersActionPerformed(evt);
+                minusAssemblersAppleActionPerformed(evt);
             }
         });
-        content.add(minusAssemblers, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 310, -1, -1));
+        content.add(minusAssemblersApple, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 340, -1, -1));
 
-        plusAssemblers.setText("+");
-        plusAssemblers.addActionListener(new java.awt.event.ActionListener() {
+        plusAssemblersApple.setBackground(new java.awt.Color(246, 243, 243));
+        plusAssemblersApple.setText("+");
+        plusAssemblersApple.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                plusAssemblersActionPerformed(evt);
+                plusAssemblersAppleActionPerformed(evt);
             }
         });
-        content.add(plusAssemblers, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 310, -1, -1));
+        content.add(plusAssemblersApple, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 340, -1, -1));
 
-        numWorkers.setText("0");
-        content.add(numWorkers, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 70, 20, -1));
+        numWorkersApple.setText("0");
+        content.add(numWorkersApple, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 100, 20, -1));
 
-        workersMotherboards.setText("0");
-        content.add(workersMotherboards, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 110, 20, -1));
+        workersMotherboardsApple.setText("0");
+        content.add(workersMotherboardsApple, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 140, 20, -1));
 
-        workersCPU.setText("0");
-        content.add(workersCPU, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 150, 20, -1));
+        workersCPUApple.setText("0");
+        content.add(workersCPUApple, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 180, 20, -1));
 
-        workersRAM.setText("0");
-        content.add(workersRAM, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 190, 20, -1));
+        workersRAMApple.setText("0");
+        content.add(workersRAMApple, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 220, 20, -1));
 
-        workersPowerSupply.setText("0");
-        content.add(workersPowerSupply, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 230, 20, -1));
+        workersPowerSupplyApple.setText("0");
+        content.add(workersPowerSupplyApple, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 260, 20, -1));
 
-        workersGPU.setText("0");
-        content.add(workersGPU, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 270, 20, -1));
+        workersGPUApple.setText("0");
+        content.add(workersGPUApple, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 300, 20, -1));
 
-        numAssemblers.setText("0");
-        content.add(numAssemblers, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 310, 20, -1));
+        numAssemblersApple.setText("0");
+        content.add(numAssemblersApple, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 340, 20, -1));
 
-        daysDuration.setBackground(new java.awt.Color(204, 204, 204));
-        daysDuration.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
-        content.add(daysDuration, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 70, 190, -1));
+        dayDuration.setBackground(new java.awt.Color(204, 204, 255));
+        dayDuration.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
+        content.add(dayDuration, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 100, 60, -1));
 
+        saveConfiguration.setBackground(new java.awt.Color(246, 243, 243));
         saveConfiguration.setText("Guardar");
         saveConfiguration.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 saveConfigurationActionPerformed(evt);
             }
         });
-        content.add(saveConfiguration, new org.netbeans.lib.awtextra.AbsoluteConstraints(540, 160, -1, -1));
+        content.add(saveConfiguration, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 220, -1, -1));
 
         jLabel9.setText("Configuracion");
-        content.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 10, -1, -1));
+        content.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 30, -1, -1));
 
-        startSimulation.setText("Empezar Simulacion");
-        startSimulation.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                startSimulationActionPerformed(evt);
-            }
-        });
-        content.add(startSimulation, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 220, -1, -1));
+        jLabel10.setText("Deadline (dias):");
+        content.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 140, 90, -1));
 
-        jLabel10.setText("Duracion de la simulacion (dias):");
-        content.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 110, -1, -1));
-
-        simulationDuration.setBackground(new java.awt.Color(204, 204, 204));
-        simulationDuration.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
-        content.add(simulationDuration, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 110, 190, -1));
+        deadline.setBackground(new java.awt.Color(204, 204, 255));
+        deadline.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 1, 0, new java.awt.Color(0, 0, 0)));
+        content.add(deadline, new org.netbeans.lib.awtextra.AbsoluteConstraints(690, 140, 60, -1));
 
         messageLabel.setText("message Label");
-        content.add(messageLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(530, 270, -1, -1));
+        content.add(messageLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(610, 290, -1, -1));
 
-        add(content, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 800, 410));
+        jLabel11.setText("Dell");
+        content.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 60, -1, -1));
+
+        minusWorkersDell.setBackground(new java.awt.Color(246, 243, 243));
+        minusWorkersDell.setText("-");
+        minusWorkersDell.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                minusWorkersDellActionPerformed(evt);
+            }
+        });
+        content.add(minusWorkersDell, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 100, -1, -1));
+
+        plusWorkersDell.setBackground(new java.awt.Color(246, 243, 243));
+        plusWorkersDell.setText("+");
+        plusWorkersDell.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                plusWorkersDellActionPerformed(evt);
+            }
+        });
+        content.add(plusWorkersDell, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 100, -1, -1));
+
+        minusMotherboardDell.setBackground(new java.awt.Color(246, 243, 243));
+        minusMotherboardDell.setText("-");
+        minusMotherboardDell.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                minusMotherboardDellActionPerformed(evt);
+            }
+        });
+        content.add(minusMotherboardDell, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 140, -1, -1));
+
+        plusMotherboardDell.setBackground(new java.awt.Color(246, 243, 243));
+        plusMotherboardDell.setText("+");
+        plusMotherboardDell.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                plusMotherboardDellActionPerformed(evt);
+            }
+        });
+        content.add(plusMotherboardDell, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 140, -1, -1));
+
+        minusCPUDell.setBackground(new java.awt.Color(246, 243, 243));
+        minusCPUDell.setText("-");
+        minusCPUDell.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                minusCPUDellActionPerformed(evt);
+            }
+        });
+        content.add(minusCPUDell, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 180, -1, -1));
+
+        plusCPUDell.setBackground(new java.awt.Color(246, 243, 243));
+        plusCPUDell.setText("+");
+        plusCPUDell.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                plusCPUDellActionPerformed(evt);
+            }
+        });
+        content.add(plusCPUDell, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 180, -1, -1));
+
+        minusRAMDell.setBackground(new java.awt.Color(246, 243, 243));
+        minusRAMDell.setText("-");
+        minusRAMDell.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                minusRAMDellActionPerformed(evt);
+            }
+        });
+        content.add(minusRAMDell, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 220, -1, -1));
+
+        plusRAMDell.setBackground(new java.awt.Color(246, 243, 243));
+        plusRAMDell.setText("+");
+        plusRAMDell.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                plusRAMDellActionPerformed(evt);
+            }
+        });
+        content.add(plusRAMDell, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 220, -1, -1));
+
+        minusPowerSupplyDell.setBackground(new java.awt.Color(246, 243, 243));
+        minusPowerSupplyDell.setText("-");
+        minusPowerSupplyDell.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                minusPowerSupplyDellActionPerformed(evt);
+            }
+        });
+        content.add(minusPowerSupplyDell, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 260, -1, -1));
+
+        plusPowerSupplyDell.setBackground(new java.awt.Color(246, 243, 243));
+        plusPowerSupplyDell.setText("+");
+        plusPowerSupplyDell.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                plusPowerSupplyDellActionPerformed(evt);
+            }
+        });
+        content.add(plusPowerSupplyDell, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 260, -1, -1));
+
+        minusGPUDell.setBackground(new java.awt.Color(246, 243, 243));
+        minusGPUDell.setText("-");
+        minusGPUDell.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                minusGPUDellActionPerformed(evt);
+            }
+        });
+        content.add(minusGPUDell, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 300, -1, -1));
+
+        plusGPUDell.setBackground(new java.awt.Color(246, 243, 243));
+        plusGPUDell.setText("+");
+        plusGPUDell.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                plusGPUDellActionPerformed(evt);
+            }
+        });
+        content.add(plusGPUDell, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 300, -1, -1));
+
+        minusAssemblersDell.setBackground(new java.awt.Color(246, 243, 243));
+        minusAssemblersDell.setText("-");
+        minusAssemblersDell.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                minusAssemblersDellActionPerformed(evt);
+            }
+        });
+        content.add(minusAssemblersDell, new org.netbeans.lib.awtextra.AbsoluteConstraints(420, 340, -1, -1));
+
+        plusAssemblersDell.setBackground(new java.awt.Color(246, 243, 243));
+        plusAssemblersDell.setText("+");
+        plusAssemblersDell.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                plusAssemblersDellActionPerformed(evt);
+            }
+        });
+        content.add(plusAssemblersDell, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 340, -1, -1));
+
+        numWorkersDell.setText("0");
+        content.add(numWorkersDell, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 100, 20, -1));
+
+        workersMotherboardsDell.setText("0");
+        content.add(workersMotherboardsDell, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 140, 20, -1));
+
+        workersCPUDell.setText("0");
+        content.add(workersCPUDell, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 180, 20, -1));
+
+        workersRAMDell.setText("0");
+        content.add(workersRAMDell, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 220, 20, -1));
+
+        workersPowerSupplyDell.setText("0");
+        content.add(workersPowerSupplyDell, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 260, 20, -1));
+
+        workersGPUDell.setText("0");
+        content.add(workersGPUDell, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 300, 20, -1));
+
+        numAssemblersDell.setText("0");
+        content.add(numAssemblersDell, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 340, 20, -1));
+
+        jLabel19.setText("Apple");
+        content.add(jLabel19, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 60, -1, -1));
+
+        add(content, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 800, 490));
     }// </editor-fold>//GEN-END:initComponents
 
-    private void minusWorkersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minusWorkersActionPerformed
-        int num = Integer.parseInt(numWorkers.getText());
+    private void minusWorkersAppleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minusWorkersAppleActionPerformed
+        int num = Integer.parseInt(numWorkersApple.getText());
         if(num != 0){
             num--;
-            numWorkers.setText(Integer.toString(num));
-            this.workersCount = num;
+            numWorkersApple.setText(Integer.toString(num)); 
+            MainView.valuesApple[0] = Integer.toString(num);
+            this.workersCountApple = num;
+            if(!canAddAppleComponent()){
+                minusMotherboardAppleActionPerformed(evt);
+                minusCPUAppleActionPerformed(evt);
+                minusRAMAppleActionPerformed(evt);
+                minusPowerSupplyAppleActionPerformed(evt);
+                minusGPUAppleActionPerformed(evt);
+                minusAssemblersAppleActionPerformed(evt);
+            }
         }        
-    }//GEN-LAST:event_minusWorkersActionPerformed
+    }//GEN-LAST:event_minusWorkersAppleActionPerformed
 
-    private void plusWorkersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_plusWorkersActionPerformed
-        int num = Integer.parseInt(numWorkers.getText());        
+    private void plusWorkersAppleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_plusWorkersAppleActionPerformed
+        int num = Integer.parseInt(numWorkersApple.getText());        
         num++;
-        numWorkers.setText(Integer.toString(num));
-        this.workersCount++;        
-    }//GEN-LAST:event_plusWorkersActionPerformed
+        numWorkersApple.setText(Integer.toString(num));
+        MainView.valuesApple[0] = Integer.toString(num);
+        this.workersCountApple++;        
+    }//GEN-LAST:event_plusWorkersAppleActionPerformed
 
-    private void minusMotherboardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minusMotherboardActionPerformed
-        int num = Integer.parseInt(workersMotherboards.getText());
+    private void minusMotherboardAppleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minusMotherboardAppleActionPerformed
+        int num = Integer.parseInt(workersMotherboardsApple.getText());
         if(num != 0){
             num--;
-            workersMotherboards.setText(Integer.toString(num));
-            this.workersCount++;
+            workersMotherboardsApple.setText(Integer.toString(num));
+            MainView.valuesApple[1] = Integer.toString(num);
+            this.workersCountApple++;
         }        
-    }//GEN-LAST:event_minusMotherboardActionPerformed
+    }//GEN-LAST:event_minusMotherboardAppleActionPerformed
 
-    private void plusMotherboardActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_plusMotherboardActionPerformed
-        if(this.workersCount > 0){
-            int num = Integer.parseInt(workersMotherboards.getText());        
+    private void plusMotherboardAppleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_plusMotherboardAppleActionPerformed
+        if(canAddAppleComponent()){
+            int num = Integer.parseInt(workersMotherboardsApple.getText());        
             num++;
-            workersMotherboards.setText(Integer.toString(num)); 
-            this.workersCount--;            
+            workersMotherboardsApple.setText(Integer.toString(num)); 
+            MainView.valuesApple[1] = Integer.toString(num);
+            this.workersCountApple--;            
         }        
-    }//GEN-LAST:event_plusMotherboardActionPerformed
+    }//GEN-LAST:event_plusMotherboardAppleActionPerformed
 
-    private void minusCPUActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minusCPUActionPerformed
-        int num = Integer.parseInt(workersCPU.getText());
+    private void minusCPUAppleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minusCPUAppleActionPerformed
+        int num = Integer.parseInt(workersCPUApple.getText());
         if(num != 0){
             num--;
-            workersCPU.setText(Integer.toString(num));
-            this.workersCount++;
+            workersCPUApple.setText(Integer.toString(num));
+            MainView.valuesApple[2] = Integer.toString(num);
+            this.workersCountApple++;
         }        
-    }//GEN-LAST:event_minusCPUActionPerformed
+    }//GEN-LAST:event_minusCPUAppleActionPerformed
 
-    private void plusCPUActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_plusCPUActionPerformed
-        if(this.workersCount > 0){
-            int num = Integer.parseInt(workersCPU.getText());        
+    private void plusCPUAppleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_plusCPUAppleActionPerformed
+        if(canAddAppleComponent()){
+            int num = Integer.parseInt(workersCPUApple.getText());        
             num++;
-            workersCPU.setText(Integer.toString(num)); 
-            this.workersCount--;
+            workersCPUApple.setText(Integer.toString(num)); 
+            MainView.valuesApple[2] = Integer.toString(num);
+            this.workersCountApple--;
         }        
-    }//GEN-LAST:event_plusCPUActionPerformed
+    }//GEN-LAST:event_plusCPUAppleActionPerformed
 
-    private void minusRAMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minusRAMActionPerformed
-        int num = Integer.parseInt(workersRAM.getText());
+    private void minusRAMAppleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minusRAMAppleActionPerformed
+        int num = Integer.parseInt(workersRAMApple.getText());
         if(num != 0){
             num--;
-            workersRAM.setText(Integer.toString(num));
-            this.workersCount++;
+            workersRAMApple.setText(Integer.toString(num));
+            MainView.valuesApple[3] = Integer.toString(num);
+            this.workersCountApple++;
         }        
-    }//GEN-LAST:event_minusRAMActionPerformed
+    }//GEN-LAST:event_minusRAMAppleActionPerformed
 
-    private void plusRAMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_plusRAMActionPerformed
-        if(this.workersCount > 0){
-            int num = Integer.parseInt(workersRAM.getText());        
+    private void plusRAMAppleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_plusRAMAppleActionPerformed
+        if(canAddAppleComponent()){
+            int num = Integer.parseInt(workersRAMApple.getText());        
             num++;
-            workersRAM.setText(Integer.toString(num)); 
-            this.workersCount--;
+            workersRAMApple.setText(Integer.toString(num)); 
+            MainView.valuesApple[3] = Integer.toString(num);
+            this.workersCountApple--;
         }        
-    }//GEN-LAST:event_plusRAMActionPerformed
+    }//GEN-LAST:event_plusRAMAppleActionPerformed
 
-    private void minusPowerSupplyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minusPowerSupplyActionPerformed
-        int num = Integer.parseInt(workersPowerSupply.getText());
+    private void minusPowerSupplyAppleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minusPowerSupplyAppleActionPerformed
+        int num = Integer.parseInt(workersPowerSupplyApple.getText());
         if(num != 0){
             num--;
-            workersPowerSupply.setText(Integer.toString(num));
-            this.workersCount++;
+            workersPowerSupplyApple.setText(Integer.toString(num));
+            MainView.valuesApple[4] = Integer.toString(num);
+            this.workersCountApple++;
         }        
-    }//GEN-LAST:event_minusPowerSupplyActionPerformed
+    }//GEN-LAST:event_minusPowerSupplyAppleActionPerformed
 
-    private void plusPowerSupplyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_plusPowerSupplyActionPerformed
-        if(this.workersCount > 0){
-            int num = Integer.parseInt(workersPowerSupply.getText());        
+    private void plusPowerSupplyAppleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_plusPowerSupplyAppleActionPerformed
+        if(canAddAppleComponent()){
+            int num = Integer.parseInt(workersPowerSupplyApple.getText());        
             num++;
-            workersPowerSupply.setText(Integer.toString(num)); 
-            this.workersCount--;
-        }        
-    }//GEN-LAST:event_plusPowerSupplyActionPerformed
+            workersPowerSupplyApple.setText(Integer.toString(num)); 
+            MainView.valuesApple[4] = Integer.toString(num);
+            this.workersCountApple--;
+        }          
+    }//GEN-LAST:event_plusPowerSupplyAppleActionPerformed
 
-    private void minusGPUActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minusGPUActionPerformed
-        int num = Integer.parseInt(workersGPU.getText());
+    private void minusGPUAppleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minusGPUAppleActionPerformed
+        int num = Integer.parseInt(workersGPUApple.getText());
         if(num != 0){
             num--;
-            workersGPU.setText(Integer.toString(num));
-            this.workersCount++;
+            workersGPUApple.setText(Integer.toString(num));
+            MainView.valuesApple[5] = Integer.toString(num);
+            this.workersCountApple++;
         }        
-    }//GEN-LAST:event_minusGPUActionPerformed
+    }//GEN-LAST:event_minusGPUAppleActionPerformed
 
-    private void plusGPUActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_plusGPUActionPerformed
-        if(this.workersCount > 0){
-            int num = Integer.parseInt(workersGPU.getText());        
+    private void plusGPUAppleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_plusGPUAppleActionPerformed
+        if(canAddAppleComponent()){
+            int num = Integer.parseInt(workersGPUApple.getText());        
             num++;
-            workersGPU.setText(Integer.toString(num)); 
-            this.workersCount--;
+            workersGPUApple.setText(Integer.toString(num)); 
+            MainView.valuesApple[5] = Integer.toString(num);
+            this.workersCountApple--;
         }        
-    }//GEN-LAST:event_plusGPUActionPerformed
+    }//GEN-LAST:event_plusGPUAppleActionPerformed
 
-    private void minusAssemblersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minusAssemblersActionPerformed
-        int num = Integer.parseInt(numAssemblers.getText());
+    private void minusAssemblersAppleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minusAssemblersAppleActionPerformed
+        int num = Integer.parseInt(numAssemblersApple.getText());
         if(num != 0){
             num--;
-            numAssemblers.setText(Integer.toString(num));
-            this.workersCount++;
+            numAssemblersApple.setText(Integer.toString(num));
+            MainView.valuesApple[6] = Integer.toString(num);
+            this.workersCountApple++;
         }        
-    }//GEN-LAST:event_minusAssemblersActionPerformed
+    }//GEN-LAST:event_minusAssemblersAppleActionPerformed
 
-    private void plusAssemblersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_plusAssemblersActionPerformed
-        if(this.workersCount > 0){
-            int num = Integer.parseInt(numAssemblers.getText());        
+    private void plusAssemblersAppleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_plusAssemblersAppleActionPerformed
+        if(canAddAppleComponent()){
+            int num = Integer.parseInt(numAssemblersApple.getText());        
             num++;
-            numAssemblers.setText(Integer.toString(num)); 
-            this.workersCount--;
+            numAssemblersApple.setText(Integer.toString(num)); 
+            MainView.valuesApple[6] = Integer.toString(num);
+            this.workersCountApple--;
         }        
-    }//GEN-LAST:event_plusAssemblersActionPerformed
+    }//GEN-LAST:event_plusAssemblersAppleActionPerformed
 
     private void saveConfigurationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveConfigurationActionPerformed
         Semaphore sem = new Semaphore(2);
         
-        String[] values = new String[7];        
+        String[] valuesApple = new String[7];        
+        String[] valuesDell = new String[7];        
         
-        values[0] = numWorkers.getText();
-        values[1] = workersMotherboards.getText();
-        values[2] = workersCPU.getText();
-        values[3] = workersRAM.getText();
-        values[4] = workersPowerSupply.getText();
-        values[5] = workersGPU.getText();
-        values[6] = numAssemblers.getText();                
+        valuesApple[0] = numWorkersApple.getText();
+        valuesApple[1] = workersMotherboardsApple.getText();
+        valuesApple[2] = workersCPUApple.getText();
+        valuesApple[3] = workersRAMApple.getText();
+        valuesApple[4] = workersPowerSupplyApple.getText();
+        valuesApple[5] = workersGPUApple.getText();
+        valuesApple[6] = numAssemblersApple.getText();                
+        
+        valuesDell[0] = numWorkersDell.getText();
+        valuesDell[1] = workersMotherboardsDell.getText();
+        valuesDell[2] = workersCPUDell.getText();
+        valuesDell[3] = workersRAMDell.getText();
+        valuesDell[4] = workersPowerSupplyDell.getText();
+        valuesDell[5] = workersGPUDell.getText();
+        valuesDell[6] = numAssemblersDell.getText();                 
         
         String currentDir = System.getProperty("user.dir");        
         String path = Paths.get(currentDir, "src", "txtFiles", "config.txt").toString();    
         
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(path))) {                                
-            for(String value: values){
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(path))) { 
+            writer.write("Apple");
+            writer.newLine();
+            for(String value: valuesApple){
                 writer.write(value);
                 writer.newLine();
             }
+            writer.write("Dell");
+            writer.newLine();
+            for(String value: valuesDell){
+                writer.write(value);
+                writer.newLine();
+            }
+            if(dayDuration.getText().isBlank()){
+                writer.write("dayDuration: ");
+            }
+            else{
+                writer.write("dayDuration:" + dayDuration.getText());                
+            }
+            writer.newLine();
+            
+            if(deadline.getText().isBlank()){
+                writer.write("deadline: ");
+            }
+            else{
+                writer.write("deadline:" + deadline.getText());                
+            }
+            writer.newLine();
+            
         } catch (IOException e) {
             e.printStackTrace();
         }
     }//GEN-LAST:event_saveConfigurationActionPerformed
 
-    private void startSimulationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startSimulationActionPerformed
-        String[] values = new String[7];        
-        
-        values[0] = numWorkers.getText();
-        values[1] = workersMotherboards.getText();
-        values[2] = workersCPU.getText();
-        values[3] = workersRAM.getText();
-        values[4] = workersPowerSupply.getText();
-        values[5] = workersGPU.getText();
-        values[6] = numAssemblers.getText(); 
-        
-        
-    }//GEN-LAST:event_startSimulationActionPerformed
+    private void minusWorkersDellActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minusWorkersDellActionPerformed
+        int num = Integer.parseInt(numWorkersDell.getText());
+        if(num != 0){
+            num--;
+            numWorkersDell.setText(Integer.toString(num));
+            MainView.valuesDell[0] = Integer.toString(num);
+            this.workersCountDell = num;
+            if(!canAddDellComponent()){
+                minusMotherboardDellActionPerformed(evt);
+                minusCPUDellActionPerformed(evt);
+                minusRAMDellActionPerformed(evt);
+                minusPowerSupplyDellActionPerformed(evt);
+                minusGPUDellActionPerformed(evt);
+                minusAssemblersDellActionPerformed(evt);
+            }
+        } 
+    }//GEN-LAST:event_minusWorkersDellActionPerformed
+
+    private void plusWorkersDellActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_plusWorkersDellActionPerformed
+        int num = Integer.parseInt(numWorkersDell.getText());        
+        num++;
+        numWorkersDell.setText(Integer.toString(num));
+        MainView.valuesDell[0] = Integer.toString(num);
+        this.workersCountDell++; 
+    }//GEN-LAST:event_plusWorkersDellActionPerformed
+
+    private void minusMotherboardDellActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minusMotherboardDellActionPerformed
+        int num = Integer.parseInt(workersMotherboardsDell.getText());
+        if(num != 0){
+            num--;
+            workersMotherboardsDell.setText(Integer.toString(num));
+            MainView.valuesDell[1] = Integer.toString(num);
+            this.workersCountDell++;
+        } 
+    }//GEN-LAST:event_minusMotherboardDellActionPerformed
+
+    private void plusMotherboardDellActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_plusMotherboardDellActionPerformed
+        if(canAddDellComponent()){
+            int num = Integer.parseInt(workersMotherboardsDell.getText());        
+            num++;
+            workersMotherboardsDell.setText(Integer.toString(num));
+            MainView.valuesDell[1] = Integer.toString(num);
+            this.workersCountDell--;            
+        } 
+    }//GEN-LAST:event_plusMotherboardDellActionPerformed
+
+    private void minusCPUDellActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minusCPUDellActionPerformed
+        int num = Integer.parseInt(workersCPUDell.getText());
+        if(num != 0){
+            num--;
+            workersCPUDell.setText(Integer.toString(num));
+            MainView.valuesDell[2] = Integer.toString(num);
+            this.workersCountDell++;
+        }
+    }//GEN-LAST:event_minusCPUDellActionPerformed
+
+    private void plusCPUDellActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_plusCPUDellActionPerformed
+        if(canAddDellComponent()){
+            int num = Integer.parseInt(workersCPUDell.getText());        
+            num++;
+            workersCPUDell.setText(Integer.toString(num)); 
+            MainView.valuesDell[2] = Integer.toString(num);
+            this.workersCountDell--;
+        }
+    }//GEN-LAST:event_plusCPUDellActionPerformed
+
+    private void minusRAMDellActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minusRAMDellActionPerformed
+        int num = Integer.parseInt(workersRAMDell.getText());
+        if(num != 0){
+            num--;
+            workersRAMDell.setText(Integer.toString(num));
+            MainView.valuesDell[3] = Integer.toString(num);
+            this.workersCountDell++;
+        }
+    }//GEN-LAST:event_minusRAMDellActionPerformed
+
+    private void plusRAMDellActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_plusRAMDellActionPerformed
+        if(canAddDellComponent()){
+            int num = Integer.parseInt(workersRAMDell.getText());        
+            num++;
+            workersRAMDell.setText(Integer.toString(num));
+            MainView.valuesDell[3] = Integer.toString(num);
+            this.workersCountDell--;
+        }
+    }//GEN-LAST:event_plusRAMDellActionPerformed
+
+    private void minusPowerSupplyDellActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minusPowerSupplyDellActionPerformed
+        int num = Integer.parseInt(workersPowerSupplyDell.getText());
+        if(num != 0){
+            num--;
+            workersPowerSupplyDell.setText(Integer.toString(num));
+            MainView.valuesDell[4] = Integer.toString(num);
+            this.workersCountDell++;
+        }
+    }//GEN-LAST:event_minusPowerSupplyDellActionPerformed
+
+    private void plusPowerSupplyDellActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_plusPowerSupplyDellActionPerformed
+        if(canAddDellComponent()){
+            int num = Integer.parseInt(workersPowerSupplyDell.getText());        
+            num++;
+            workersPowerSupplyDell.setText(Integer.toString(num)); 
+            MainView.valuesDell[4] = Integer.toString(num);
+            this.workersCountDell--;
+        }
+    }//GEN-LAST:event_plusPowerSupplyDellActionPerformed
+
+    private void minusGPUDellActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minusGPUDellActionPerformed
+        int num = Integer.parseInt(workersGPUDell.getText());
+        if(num != 0){
+            num--;
+            workersGPUDell.setText(Integer.toString(num));
+            MainView.valuesDell[5] = Integer.toString(num);
+            this.workersCountDell++;
+        }
+    }//GEN-LAST:event_minusGPUDellActionPerformed
+
+    private void plusGPUDellActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_plusGPUDellActionPerformed
+        if(canAddDellComponent()){
+            int num = Integer.parseInt(workersGPUDell.getText());        
+            num++;
+            workersGPUDell.setText(Integer.toString(num)); 
+            MainView.valuesDell[5] = Integer.toString(num);
+            this.workersCountDell--;
+        }
+    }//GEN-LAST:event_plusGPUDellActionPerformed
+
+    private void minusAssemblersDellActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_minusAssemblersDellActionPerformed
+        int num = Integer.parseInt(numAssemblersDell.getText());
+        if(num != 0){
+            num--;
+            numAssemblersDell.setText(Integer.toString(num));
+            MainView.valuesDell[6] = Integer.toString(num);
+            this.workersCountDell++;
+        }
+    }//GEN-LAST:event_minusAssemblersDellActionPerformed
+
+    private void plusAssemblersDellActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_plusAssemblersDellActionPerformed
+        if(canAddDellComponent()){
+            int num = Integer.parseInt(numAssemblersDell.getText());        
+            num++;
+            numAssemblersDell.setText(Integer.toString(num)); 
+            MainView.valuesDell[6] = Integer.toString(num);
+            this.workersCountDell--;
+        }
+    }//GEN-LAST:event_plusAssemblersDellActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel content;
-    private javax.swing.JTextField daysDuration;
+    private javax.swing.JTextField dayDuration;
+    private javax.swing.JTextField deadline;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -484,29 +912,102 @@ public class ConfigurationView extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JLabel messageLabel;
-    private javax.swing.JButton minusAssemblers;
-    private javax.swing.JButton minusCPU;
-    private javax.swing.JButton minusGPU;
-    private javax.swing.JButton minusMotherboard;
-    private javax.swing.JButton minusPowerSupply;
-    private javax.swing.JButton minusRAM;
-    private javax.swing.JButton minusWorkers;
-    private javax.swing.JLabel numAssemblers;
-    private javax.swing.JLabel numWorkers;
-    private javax.swing.JButton plusAssemblers;
-    private javax.swing.JButton plusCPU;
-    private javax.swing.JButton plusGPU;
-    private javax.swing.JButton plusMotherboard;
-    private javax.swing.JButton plusPowerSupply;
-    private javax.swing.JButton plusRAM;
-    private javax.swing.JButton plusWorkers;
+    private javax.swing.JButton minusAssemblersApple;
+    private javax.swing.JButton minusAssemblersDell;
+    private javax.swing.JButton minusCPUApple;
+    private javax.swing.JButton minusCPUDell;
+    private javax.swing.JButton minusGPUApple;
+    private javax.swing.JButton minusGPUDell;
+    private javax.swing.JButton minusMotherboardApple;
+    private javax.swing.JButton minusMotherboardDell;
+    private javax.swing.JButton minusPowerSupplyApple;
+    private javax.swing.JButton minusPowerSupplyDell;
+    private javax.swing.JButton minusRAMApple;
+    private javax.swing.JButton minusRAMDell;
+    private javax.swing.JButton minusWorkersApple;
+    private javax.swing.JButton minusWorkersDell;
+    private javax.swing.JLabel numAssemblersApple;
+    private javax.swing.JLabel numAssemblersDell;
+    private javax.swing.JLabel numWorkersApple;
+    private javax.swing.JLabel numWorkersDell;
+    private javax.swing.JButton plusAssemblersApple;
+    private javax.swing.JButton plusAssemblersDell;
+    private javax.swing.JButton plusCPUApple;
+    private javax.swing.JButton plusCPUDell;
+    private javax.swing.JButton plusGPUApple;
+    private javax.swing.JButton plusGPUDell;
+    private javax.swing.JButton plusMotherboardApple;
+    private javax.swing.JButton plusMotherboardDell;
+    private javax.swing.JButton plusPowerSupplyApple;
+    private javax.swing.JButton plusPowerSupplyDell;
+    private javax.swing.JButton plusRAMApple;
+    private javax.swing.JButton plusRAMDell;
+    private javax.swing.JButton plusWorkersApple;
+    private javax.swing.JButton plusWorkersDell;
     private javax.swing.JButton saveConfiguration;
-    private javax.swing.JTextField simulationDuration;
-    private javax.swing.JButton startSimulation;
-    private javax.swing.JLabel workersCPU;
-    private javax.swing.JLabel workersGPU;
-    private javax.swing.JLabel workersMotherboards;
-    private javax.swing.JLabel workersPowerSupply;
-    private javax.swing.JLabel workersRAM;
+    private javax.swing.JLabel workersCPUApple;
+    private javax.swing.JLabel workersCPUDell;
+    private javax.swing.JLabel workersGPUApple;
+    private javax.swing.JLabel workersGPUDell;
+    private javax.swing.JLabel workersMotherboardsApple;
+    private javax.swing.JLabel workersMotherboardsDell;
+    private javax.swing.JLabel workersPowerSupplyApple;
+    private javax.swing.JLabel workersPowerSupplyDell;
+    private javax.swing.JLabel workersRAMApple;
+    private javax.swing.JLabel workersRAMDell;
     // End of variables declaration//GEN-END:variables
+
+    public String[] getValuesApple() {
+        return valuesApple;
+    }
+
+    public void setValuesApple(String[] valuesApple) {
+        this.valuesApple = valuesApple;
+    }
+
+    public String[] getValuesDell() {
+        return valuesDell;
+    }
+
+    public void setValuesDell(String[] valuesDell) {
+        this.valuesDell = valuesDell;
+    }
+
+    public JTextField getDayDuration() {
+        return dayDuration;
+    }
+
+    public void setDayDuration(JTextField dayDuration) {
+        this.dayDuration = dayDuration;
+    }
+
+    public JTextField getDeadline() {
+        return deadline;
+    }
+
+    public void setDeadline(JTextField deadline) {
+        this.deadline = deadline;
+    }
+
+    public String getDayDurationStr() {
+        return dayDurationStr;
+    }
+
+    public void setDayDurationStr(String dayDurationStr) {
+        this.dayDurationStr = dayDurationStr;
+    }
+
+    public String getDeadlineStr() {
+        return deadlineStr;
+    }
+
+    public void setDeadlineStr(String deadlineStr) {
+        this.deadlineStr = deadlineStr;
+    }
+    
+    
+    
+
 }
+
+

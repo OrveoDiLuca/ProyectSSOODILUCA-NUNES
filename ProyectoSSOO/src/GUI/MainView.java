@@ -5,12 +5,15 @@
 package GUI;
 
 import classes.Company;
+import classes.Wharehouse;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.concurrent.Semaphore;
 
 /**
  *
@@ -21,38 +24,84 @@ public class MainView extends javax.swing.JFrame {
     int xMouse, yMouse;
     Company dell, apple;    
     ConfigurationView configurationView;
+    SimulationView simulationView;
+    static String[] valuesApple;
+    static String[] valuesDell;
+    static String dayDuration;
+    static String deadline;
     
     public MainView() {
         initComponents();
-        this.dell = null;
-        this.apple = null;
+
+        MainView.valuesApple = new String[7];
+        MainView.valuesDell = new String[7];
+        MainView.dayDuration = "";
+        MainView.deadline = "";
         
-        String[] values = new String[7];
         String currentDir = System.getProperty("user.dir");        
         String path = Paths.get(currentDir, "src", "txtFiles", "config.txt").toString(); 
-        
-        try (BufferedReader reader = new BufferedReader(new FileReader(path))) {
-            String linea;
-            int count = 0;
-            while ((linea = reader.readLine()) != null) {
-                values[count] = linea;
-                count++;
+        File file = new File(path);
+        if(file.length() == 0){
+            this.configurationView = new ConfigurationView(this.dell, this.apple);
+        }
+        else{
+            try (BufferedReader reader = new BufferedReader(new FileReader(path))) {                                                
+                reader.readLine();
+                for (int i = 0; i < 7; i++) {
+                    valuesApple[i] = reader.readLine();
+                }
+                reader.readLine();
+                for (int i = 0; i < 7; i++) {
+                    valuesDell[i] = reader.readLine();
+                }
+                dayDuration = reader.readLine().split(":")[1];                
+                deadline = reader.readLine().split(":")[1];                    
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+
+
+
+            this.configurationView = new ConfigurationView(this.dell, this.apple, valuesApple, valuesDell, dayDuration, deadline);
         }
         
-        
-        
-        this.configurationView = new ConfigurationView(this.dell, this.apple, values);
-        this.configurationView.setSize(800, 410);
+        this.configurationView.setSize(800, 490);
         this.configurationView.setLocation(0, 0);
-        
+
         body.removeAll();
         body.add(configurationView, BorderLayout.CENTER);
         body.revalidate();
-        body.repaint();
+        body.repaint();  
+        
+        
+        Semaphore mutex = new Semaphore(1);
+        int dayDurationInt = Integer.parseInt(dayDuration);
+        int daysToDispatch = Integer.parseInt(deadline);
+
+        int limitWorkersApple = Integer.parseInt(valuesApple[0]);
+        int[] requerimentsApple = {2, 1, 4, 4, 2};
+        Wharehouse whApple = new Wharehouse(5, requerimentsApple);
+        Semaphore employeesMutexApple = new Semaphore(1);
+        
+        int limitWorkersDell = Integer.parseInt(valuesDell[0]);
+        int[] requerimentsDell = {1, 5, 6, 5, 1};
+        Wharehouse whDell = new Wharehouse(3, requerimentsDell);
+        Semaphore employeesMutexDell = new Semaphore(1);
+        
+        
+        this.simulationView = new SimulationView(configurationView.getValuesApple(), configurationView.getValuesDell(), dayDuration, deadline);
+        this.apple = new Company("Apple", limitWorkersApple, whApple, 3, dayDurationInt, 
+                daysToDispatch, 100000, 150000, employeesMutexApple, mutex, simulationView);
+        
+        this.dell = new Company("Dell", limitWorkersDell, whDell, 7, dayDurationInt, 
+                daysToDispatch, 80000, 120000, employeesMutexDell, mutex, simulationView); 
+        
+        this.simulationView.setApple(apple);
+        this.simulationView.setDell(dell);
     }
+    
+ 
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -68,8 +117,7 @@ public class MainView extends javax.swing.JFrame {
         body = new javax.swing.JPanel();
         header = new javax.swing.JPanel();
         configurationButton = new javax.swing.JButton();
-        dellButton = new javax.swing.JButton();
-        appleButton = new javax.swing.JButton();
+        simulationButton = new javax.swing.JButton();
         exit = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
 
@@ -77,6 +125,7 @@ public class MainView extends javax.swing.JFrame {
         setLocationByPlatform(true);
         setUndecorated(true);
         setResizable(false);
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
@@ -90,10 +139,10 @@ public class MainView extends javax.swing.JFrame {
         );
         bodyLayout.setVerticalGroup(
             bodyLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 410, Short.MAX_VALUE)
+            .addGap(0, 490, Short.MAX_VALUE)
         );
 
-        jPanel1.add(body, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 40, 800, 410));
+        jPanel1.add(body, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 40, 800, 490));
 
         header.setBackground(new java.awt.Color(255, 255, 255));
         header.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 102, 102)));
@@ -126,39 +175,22 @@ public class MainView extends javax.swing.JFrame {
         });
         header.add(configurationButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 110, 40));
 
-        dellButton.setBackground(new java.awt.Color(204, 255, 255));
-        dellButton.setText("Dell");
-        dellButton.addMouseListener(new java.awt.event.MouseAdapter() {
+        simulationButton.setBackground(new java.awt.Color(204, 255, 255));
+        simulationButton.setText("Simulacion");
+        simulationButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                dellButtonMouseEntered(evt);
+                simulationButtonMouseEntered(evt);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                dellButtonMouseExited(evt);
+                simulationButtonMouseExited(evt);
             }
         });
-        dellButton.addActionListener(new java.awt.event.ActionListener() {
+        simulationButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                dellButtonActionPerformed(evt);
+                simulationButtonActionPerformed(evt);
             }
         });
-        header.add(dellButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 0, 120, 40));
-
-        appleButton.setBackground(new java.awt.Color(204, 255, 255));
-        appleButton.setText("Apple");
-        appleButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                appleButtonMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                appleButtonMouseExited(evt);
-            }
-        });
-        appleButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                appleButtonActionPerformed(evt);
-            }
-        });
-        header.add(appleButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 0, 110, 40));
+        header.add(simulationButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 0, 110, 40));
 
         exit.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(102, 102, 102)));
         exit.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -181,24 +213,14 @@ public class MainView extends javax.swing.JFrame {
 
         jPanel1.add(header, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 800, 40));
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-        );
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, 530));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void configurationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_configurationButtonActionPerformed
-        // TODO add your handling code here:
-        ConfigurationView configurationView = new ConfigurationView(this.dell, this.apple);
-        configurationView.setSize(800, 410);
+        // TODO add your handling code here:                
+        configurationView.setSize(800, 490);
         configurationView.setLocation(0, 0);
         
         body.removeAll();
@@ -208,27 +230,17 @@ public class MainView extends javax.swing.JFrame {
         
     }//GEN-LAST:event_configurationButtonActionPerformed
 
-    private void dellButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dellButtonActionPerformed
-        DellView dellView = new DellView();
-        dellView.setSize(800, 410);
-        dellView.setLocation(0, 0);
+    private void simulationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_simulationButtonActionPerformed
+        simulationView.initValues(configurationView.getValuesApple(), configurationView.getValuesDell(), 
+                configurationView.getDayDuration().getText(), configurationView.getDeadline().getText());        
+        simulationView.setSize(800, 490);
+        simulationView.setLocation(0, 0);
         
         body.removeAll();
-        body.add(dellView, BorderLayout.CENTER);
+        body.add(simulationView, BorderLayout.CENTER);
         body.revalidate();
         body.repaint();
-    }//GEN-LAST:event_dellButtonActionPerformed
-
-    private void appleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_appleButtonActionPerformed
-        AppleView appleView = new AppleView();
-        appleView.setSize(800, 410);
-        appleView.setLocation(0, 0);
-        
-        body.removeAll();
-        body.add(appleView, BorderLayout.CENTER);
-        body.revalidate();
-        body.repaint();
-    }//GEN-LAST:event_appleButtonActionPerformed
+    }//GEN-LAST:event_simulationButtonActionPerformed
 
     private void exitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_exitMouseClicked
         System.exit(0);
@@ -265,25 +277,15 @@ public class MainView extends javax.swing.JFrame {
         configurationButton.setBackground(color);
     }//GEN-LAST:event_configurationButtonMouseExited
 
-    private void dellButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dellButtonMouseEntered
+    private void simulationButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_simulationButtonMouseEntered
         Color color = new Color(152, 234, 234);
-        dellButton.setBackground(color);
-    }//GEN-LAST:event_dellButtonMouseEntered
+        simulationButton.setBackground(color);
+    }//GEN-LAST:event_simulationButtonMouseEntered
 
-    private void dellButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dellButtonMouseExited
+    private void simulationButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_simulationButtonMouseExited
         Color color = new Color(204, 255, 255);
-        dellButton.setBackground(color);
-    }//GEN-LAST:event_dellButtonMouseExited
-
-    private void appleButtonMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_appleButtonMouseEntered
-        Color color = new Color(152, 234, 234);
-        appleButton.setBackground(color);
-    }//GEN-LAST:event_appleButtonMouseEntered
-
-    private void appleButtonMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_appleButtonMouseExited
-        Color color = new Color(204, 255, 255);
-        appleButton.setBackground(color);
-    }//GEN-LAST:event_appleButtonMouseExited
+        simulationButton.setBackground(color);
+    }//GEN-LAST:event_simulationButtonMouseExited
 
     /**
      * @param args the command line arguments
@@ -328,14 +330,13 @@ public class MainView extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton appleButton;
     private javax.swing.JPanel body;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton configurationButton;
-    private javax.swing.JButton dellButton;
     private javax.swing.JPanel exit;
     private javax.swing.JPanel header;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JButton simulationButton;
     // End of variables declaration//GEN-END:variables
 }
